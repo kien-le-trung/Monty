@@ -7,7 +7,7 @@ from unittest.mock import AsyncMock, Mock
 
 import pytest
 from fastapi import HTTPException
-from langchain.messages import AIMessage, ToolMessage
+from langchain.messages import AIMessage, HumanMessage, ToolMessage
 
 from app.core.config import settings
 from app.schemas.purchase_assessment import FinalAssessment
@@ -201,9 +201,9 @@ async def test_budget_checked_before_each_request(context, models, history_reque
     if history_requested:
         # Historical inputs are hidden from routing, but must fit before finalization.
         models.response = AIMessage(content="", tool_calls=[tool_call()])
-        context["baseline"]["oversized"] = "x" * 40000
+        context["baseline"]["oversized"] = "x" * (settings.PURCHASE_ASSESSMENT_MAX_INPUT_TOKENS * 3 + 10000)
     else:
-        context["purchase"]["oversized"] = "x" * 40000
+        context["purchase"]["oversized"] = "x" * (settings.PURCHASE_ASSESSMENT_MAX_INPUT_TOKENS * 3 + 10000)
     with pytest.raises(HTTPException) as error:
         await agent.assess_purchase(context, "model")
     assert error.value.status_code == 422
@@ -241,6 +241,18 @@ def test_references_only_include_supplied_records(context):
         "core_memory": context["core_memory"], "semantic_memories": context["semantic_memories"]})
     assert refs == {"purchase", "core_memory.entries.interests", "semantic_memories.memory"}
     assert agent.references_for({}) == set()
+
+
+def test_purchase_budget_can_exceed_chat_budget_without_changing_it(monkeypatch):
+    monkeypatch.setattr(settings, "AI_MAX_INPUT_TOKENS", 10000)
+    monkeypatch.setattr(settings, "PURCHASE_ASSESSMENT_MAX_INPUT_TOKENS", 32768)
+    messages = [HumanMessage(content="x" * 45000)]
+    agent.check_budget(messages, {})
+    assert settings.AI_MAX_INPUT_TOKENS == 10000
+    monkeypatch.setattr(settings, "PURCHASE_ASSESSMENT_MAX_INPUT_TOKENS", 10000)
+    with pytest.raises(HTTPException) as error:
+        agent.check_budget(messages, {})
+    assert error.value.status_code == 422
 
 
 def test_provider_schema_inlines_quotes_without_unsupported_keywords():

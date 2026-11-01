@@ -106,7 +106,7 @@ def check_budget(messages, extra):
     )
     estimated_tokens = (len(serialized.encode("utf-8")) + 2) // 3 + 300
 
-    if estimated_tokens > settings.AI_MAX_INPUT_TOKENS:
+    if estimated_tokens > settings.PURCHASE_ASSESSMENT_MAX_INPUT_TOKENS:
         raise HTTPException(
             422,
             "Purchase assessment exceeds the configured input budget",

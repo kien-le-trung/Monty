@@ -16,6 +16,10 @@ The LangChain decision stage advertises two choices: `submit_assessment` and `as
 
 The ML baseline is still calculated and saved for every purchase; it is only exposed to Gemini if history is requested. `historical_assessment_used` records actual execution. Initial submissions cannot cite hidden historical evidence or claim a baseline comparison. Logs record model-request counts and tool usage without transcript contents. These counts exclude upstream conversation-summary requests and later worker retries.
 
+## Input budget
+
+`PURCHASE_ASSESSMENT_MAX_INPUT_TOKENS` defaults to 32768 and controls both context preparation and the LangChain requests, including tool schemas and tool results. Set it in the local `.env` or Render environment and restart the API. Chat, extraction, and summary chunk generation retain their existing `AI_MAX_INPUT_TOKENS` setting. This local estimate does not change Gemini provider quotas or model context limits.
+
 ## Context and retries
 
 The three most recent saved conversations before purchase creation are selected by saved timestamp and ID, regardless of extraction status. Core and keyword-ranked semantic memories include provenance; inferred patterns retain their uncertainty. Browser-only unfinished chats are not included. Future records are excluded from financial history. Inputs and the configured Gemini model ID are frozen for retries.

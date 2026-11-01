@@ -225,7 +225,7 @@ async def run_one(factory, provider):
         from app.core.ai import PERSONALITY, TASKS
         overhead = estimate({"system": PERSONALITY + "\n" + TASKS["completed_purchase"],
             "schema": assessment_provider_schema(), "routing_tools": routing_tool_schemas(), "allowed_evidence_refs": sorted(allowed_refs(snapshot))}) + 300
-        budget = settings.AI_MAX_INPUT_TOKENS - overhead
+        budget = settings.PURCHASE_ASSESSMENT_MAX_INPUT_TOKENS - overhead
         if summaries or estimate(context) > budget:
             for conversation in snapshot["conversations"]:
                 cached = summaries.setdefault(conversation["id"], [])

@@ -183,6 +183,7 @@ async def test_no_fabricated_score_when_model_missing(setup, monkeypatch):
 
 @pytest.mark.asyncio
 async def test_summary_cache_survives_gemini_failure(setup, monkeypatch):
+    monkeypatch.setattr(settings, "PURCHASE_ASSESSMENT_MAX_INPUT_TOKENS", 10000)
     client, factory = setup
     with factory() as db:
         db.add(EndedConversation(id="long", child_id="child", created_at=datetime.now(timezone.utc) - timedelta(days=1),

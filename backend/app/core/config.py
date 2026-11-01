@@ -23,6 +23,7 @@ class Settings(BaseSettings):
     AI_EXTRACTION_WORKER_ENABLED: bool = True
     AI_SEMANTIC_CONSOLIDATION_ENABLED: bool = False
     PURCHASE_ASSESSMENT_WORKER_ENABLED: bool = True
+    PURCHASE_ASSESSMENT_MAX_INPUT_TOKENS: int = Field(default=32768, ge=500, le=131072)
     PURCHASE_SUMMARY_CONTEXT_TOKENS: int = Field(default=3500, ge=500, le=5000)
     DEMO_PURCHASES_ENABLED: bool = False
 
