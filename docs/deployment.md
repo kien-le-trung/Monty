@@ -6,6 +6,8 @@ Set the project's **Root Directory** to `frontend`, **Framework Preset** to Vite
 **Build Command** to `npm run build`, and **Output Directory** to `dist`.
 Set `VITE_DEMO_PURCHASES_ENABLED=true` for each deployment environment where the
 purchase demo should be visible, then redeploy after changing that variable.
+Visitors open the dashboard directly by default. Parent onboarding is retained
+but hidden; set `VITE_ONBOARDING_ENABLED=true` and redeploy to restore it.
 
 `frontend/vercel.json` forwards `/api/:path*` to
 `https://monty-ipdk.onrender.com/api/:path*`. The browser continues requesting

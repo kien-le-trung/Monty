@@ -6,12 +6,13 @@ import OnboardingPage from '@/onboarding/pages/OnboardingPage';
 import DashboardWrapper from '@/dashboard/DashboardWrapper';
 
 export default function App() {
+  const onboardingEnabled = import.meta.env.VITE_ONBOARDING_ENABLED === 'true';
   return (
     <AuthProvider>
       <OnboardingProvider>
         <MontyDataProvider>
           <Routes>
-            <Route path="/" element={<OnboardingPage />} />
+            <Route path="/" element={onboardingEnabled ? <OnboardingPage /> : <Navigate to="/dashboard" replace />} />
             <Route path="/dashboard" element={<DashboardWrapper />} />
             <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>
